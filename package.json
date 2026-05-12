@@ -4,11 +4,10 @@
   "description": "Encrypted API key manager with SQLite backend",
   "scripts": {
     "dev": "vercel dev",
-    "build": "node api/_init.js"
+    "build": "echo 'No build step'"
   },
   "dependencies": {
-    "@libsql/client": "^0.6.0",
-    "dotenv": "^16.4.5"
+    "@libsql/client": "^0.6.0"
   },
   "devDependencies": {
     "vercel": "^34.0.0"
