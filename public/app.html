@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vault — Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+
+  <aside class="sidebar">
+    <div class="sb-logo">
+      <div class="sb-logo-mark">V</div>
+      <span class="sb-logo-text">Vault</span>
+    </div>
+
+    <p class="sb-section-label">Library</p>
+    <nav class="sb-nav">
+      <button class="sb-item active" data-view="keys">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+        All Keys
+        <span class="sb-count" id="count-all">—</span>
+      </button>
+      <button class="sb-item" data-view="expired">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        Expiring
+        <span class="sb-count danger" id="count-expired">—</span>
+      </button>
+    </nav>
+
+    <div class="sb-stats">
+      <div class="sb-stat-row"><span class="sb-stat-label">Total keys</span><span class="sb-stat-val" id="stat-total">—</span></div>
+      <div class="sb-stat-row"><span class="sb-stat-label">Expired</span><span class="sb-stat-val danger" id="stat-expired">—</span></div>
+      <div class="sb-stat-row"><span class="sb-stat-label">Used today</span><span class="sb-stat-val success" id="stat-today">—</span></div>
+    </div>
+
+    <button class="sb-add-btn" id="open-modal-btn">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      New Key
+    </button>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <h1 id="view-title">All Keys</h1>
+      <div class="topbar-right">
+        <div class="search-wrap">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" id="search" placeholder="Search keys, services, tags…" />
+        </div>
+        <select id="sort-select">
+          <option value="created_at">Newest first</option>
+          <option value="name">A–Z</option>
+          <option value="service">By service</option>
+          <option value="last_used">Recently used</option>
+        </select>
+      </div>
+    </header>
+
+    <div class="keys-grid" id="keys-grid">
+      <div class="state-msg">Loading your vault…</div>
+    </div>
+  </main>
+
+  <!-- Add / Edit Modal -->
+  <div class="modal-overlay hidden" id="modal-overlay">
+    <div class="modal">
+      <div class="modal-head">
+        <h2 id="modal-title">Add New Key</h2>
+        <button class="modal-close" id="modal-close">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="edit-id" />
+        <div class="form-row two-col">
+          <div class="field">
+            <label>Key name</label>
+            <input type="text" id="f-name" placeholder="e.g. Production OpenAI" />
+          </div>
+          <div class="field">
+            <label>Service</label>
+            <input type="text" id="f-service" placeholder="e.g. OpenAI" list="service-list" />
+            <datalist id="service-list">
+              <option value="OpenAI"><option value="Anthropic"><option value="GitHub">
+              <option value="AWS"><option value="Stripe"><option value="Twilio">
+              <option value="Vercel"><option value="Supabase"><option value="RapidAPI">
+            </datalist>
+          </div>
+        </div>
+        <div class="field">
+          <label>API key value</label>
+          <div class="key-input-wrap">
+            <input type="password" id="f-value" placeholder="sk-••••••••••••••••" />
+            <button class="eye-btn" id="toggle-vis" title="Show/hide">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="form-row two-col">
+          <div class="field">
+            <label>Tags <span class="label-hint">(comma separated)</span></label>
+            <input type="text" id="f-tags" placeholder="prod, gpt-4, internal" />
+          </div>
+          <div class="field">
+            <label>Expires</label>
+            <input type="date" id="f-expires" />
+          </div>
+        </div>
+        <div class="field">
+          <label>Note</label>
+          <textarea id="f-note" rows="2" placeholder="What this key is used for…"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-ghost" id="modal-cancel">Cancel</button>
+        <button class="btn-primary" id="modal-save">Save Key</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reveal Modal -->
+  <div class="modal-overlay hidden" id="reveal-overlay">
+    <div class="modal modal-sm">
+      <div class="modal-head">
+        <h2>Key revealed</h2>
+        <button class="modal-close" id="reveal-close">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="reveal-warn">⚠ Visible now — copy it and close this window.</div>
+        <div class="reveal-box">
+          <code id="reveal-value"></code>
+          <button class="reveal-copy-btn" id="copy-reveal">Copy</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast hidden" id="toast"></div>
+
+  <script src="/js/app.js"></script>
+</body>
+</html>

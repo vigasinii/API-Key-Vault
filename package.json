@@ -1,0 +1,16 @@
+{
+  "name": "api-key-vault",
+  "version": "1.0.0",
+  "description": "Encrypted API key manager with SQLite backend",
+  "scripts": {
+    "dev": "vercel dev",
+    "build": "node api/_init.js"
+  },
+  "dependencies": {
+    "@libsql/client": "^0.6.0",
+    "dotenv": "^16.4.5"
+  },
+  "devDependencies": {
+    "vercel": "^34.0.0"
+  }
+}
